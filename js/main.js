@@ -23,7 +23,7 @@
     }
   });
 
-  // Formulaire de devis : ouvre WhatsApp avec le message déjà rempli
+  // Formulaire de devis : ouvre WhatsApp (ou un SMS) avec le message déjà rempli
   var form = document.getElementById('devis-form');
   if (!form) return;
   form.addEventListener('submit', function (e) {
@@ -40,6 +40,7 @@
     if (f.nom.value.trim()) lines.push('Nom : ' + f.nom.value.trim());
     var text = encodeURIComponent(lines.join('\n'));
     if (typeof window.gtag === 'function') window.gtag('event', 'devis_envoye', { event_category: 'contact' });
-    window.open('https://wa.me/' + cfg.wa + '?text=' + text, '_blank', 'noopener');
+    if (cfg.wa) window.open('https://wa.me/' + cfg.wa + '?text=' + text, '_blank', 'noopener');
+    else location.href = 'sms:' + cfg.tel + '?&body=' + text;
   });
 })();

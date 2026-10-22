@@ -12,9 +12,9 @@ from html import escape
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # ─── À REMPLIR ────────────────────────────────────────────────────────────────
-PHONE = "+33600000000"           # numéro au format international, sans espaces
-PHONE_DISPLAY = "06 00 00 00 00"  # numéro tel qu'affiché sur le site
-WHATSAPP = "33600000000"         # numéro WhatsApp, sans le +
+PHONE = "+33607887281"           # numéro au format international, sans espaces
+PHONE_DISPLAY = "06 07 88 72 81"  # numéro tel qu'affiché sur le site
+WHATSAPP = ""                    # numéro WhatsApp sans le + (ex. "33607887281") ; vide = boutons SMS
 GA_ID = ""                       # ID Google Analytics 4 (ex. "G-XXXXXXX"), optionnel
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -155,7 +155,7 @@ HOME_FAQ = [
     ("Quels documents dois-je fournir ?", "Une pièce d’identité et la carte grise (ou un document prouvant votre droit d’usage du véhicule). Nous n’ouvrons et ne créons aucune clé sans ces vérifications."),
     ("Est-ce moins cher qu’en concession ?", "Souvent, oui : pas de remorquage, pas d’immobilisation de plusieurs jours, et nous venons à vous. Demandez un devis pour comparer."),
     ("Quelles marques de voitures prenez-vous en charge ?", "Nous intervenons sur la plupart des marques courantes (Renault, Peugeot, Citroën, Volkswagen, Toyota…). La faisabilité dépend du modèle et de l’année : elle vous est confirmée au téléphone."),
-    ("Comment obtenir un devis rapidement ?", "Appelez-nous, ou remplissez le formulaire de devis : il ouvre WhatsApp avec votre demande déjà rédigée. Nous nous efforçons de répondre sous 30 minutes."),
+    ("Comment obtenir un devis rapidement ?", "Appelez-nous, ou remplissez le formulaire de devis : il ouvre un SMS avec votre demande déjà rédigée. Nous nous efforçons de répondre sous 30 minutes."),
 ]
 
 # ─── Icônes ───────────────────────────────────────────────────────────────────
@@ -163,15 +163,21 @@ ICON_PHONE = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><p
 ICON_WA = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>'
 ICON_SMS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM8 11H6V9h2v2Zm5 0h-2V9h2v2Zm5 0h-2V9h2v2Z"/></svg>'
 
-WA_LINK = f"https://wa.me/{WHATSAPP}?text=" + "Bonjour%20Dupli%E2%80%99Cl%C3%A9%20Express%2C%20j%E2%80%99ai%20besoin%20d%E2%80%99un%20serrurier%20automobile."
+MSG_NAME = "WhatsApp" if WHATSAPP else "SMS"
+if not WHATSAPP:
+    ICON_WA = ICON_SMS
+GREETING = "Bonjour%20Dupli%E2%80%99Cl%C3%A9%20Express%2C%20j%E2%80%99ai%20besoin%20d%E2%80%99un%20serrurier%20automobile."
+WA_LINK = f"https://wa.me/{WHATSAPP}?text={GREETING}" if WHATSAPP else f"sms:{PHONE}?&body={GREETING}"
+NEW_TAB = ' target="_blank" rel="noopener"' if WHATSAPP else ""
 
 
 def btn_call(extra=""):
     return f'<a class="btn btn-call {extra}" href="tel:{PHONE}">{ICON_PHONE}Appeler {PHONE_DISPLAY}</a>'
 
 
-def btn_wa(label="Devis WhatsApp"):
-    return f'<a class="btn btn-wa" href="{WA_LINK}" target="_blank" rel="noopener">{ICON_WA}{label}</a>'
+def btn_wa(label=None):
+    label = label or f"Devis par {MSG_NAME}"
+    return f'<a class="btn btn-wa" href="{WA_LINK}"{NEW_TAB}>{ICON_WA}{label}</a>'
 
 
 def business_schema():
@@ -243,7 +249,7 @@ def head(title, desc, path, extra_ld=""):
 {ga}
 {ld(business_schema())}
 {extra_ld}
-<script>window.DCE={{wa:"{WHATSAPP}"}}</script>
+<script>window.DCE={{wa:"{WHATSAPP}",tel:"{PHONE}"}}</script>
 <script src="/js/main.js" defer></script>
 </head>
 <body>
@@ -282,7 +288,7 @@ def footer():
 </div>
 <div class="legal">© {date.today().year} {NAME} · Serrurier automobile · {REGION}</div>
 </div></footer>
-<div class="callbar"><a class="c" href="tel:{PHONE}">{ICON_PHONE}Appeler</a><a class="w" href="{WA_LINK}" target="_blank" rel="noopener">{ICON_WA}WhatsApp</a></div>
+<div class="callbar"><a class="c" href="tel:{PHONE}">{ICON_PHONE}Appeler</a><a class="w" href="{WA_LINK}"{NEW_TAB}>{ICON_WA}{MSG_NAME}</a></div>
 </body>
 </html>
 '''
@@ -293,16 +299,17 @@ def faq_html(faq):
 
 
 def devis_section():
+    sms_item = "" if not WHATSAPP else f'<li><a href="sms:{PHONE}"><span class="i" style="background:var(--yellow);color:#111">{ICON_SMS}</span><span>SMS<small>Si vous ne pouvez pas appeler</small></span></a></li>'
     opts = "".join(f"<option>{label}</option>" for label, _, _ in PRICE_ROWS) + "<option>Autre / je ne sais pas</option>"
     return f'''<section class="block alt" id="devis"><div class="container quote">
 <div>
 <div class="tag">Devis gratuit</div>
 <h2>Votre devis <em>en quelques minutes</em></h2>
-<p class="lead">Indiquez votre véhicule et votre situation : le formulaire ouvre WhatsApp avec votre demande déjà rédigée. Nous nous efforçons de vous répondre sous 30 minutes. Pour une urgence, appelez directement.</p>
+<p class="lead">Indiquez votre véhicule et votre situation : le formulaire ouvre {MSG_NAME} avec votre demande déjà rédigée. Nous nous efforçons de vous répondre sous 30 minutes. Pour une urgence, appelez directement.</p>
 <ul class="contact-list">
 <li><a href="tel:{PHONE}"><span class="i" style="background:var(--red);color:#fff">{ICON_PHONE}</span><span>{PHONE_DISPLAY}<small>Appel 24h/24 – le plus rapide</small></span></a></li>
-<li><a href="{WA_LINK}" target="_blank" rel="noopener"><span class="i" style="background:var(--green);color:#06210f">{ICON_WA}</span><span>WhatsApp<small>Envoyez une photo de votre clé</small></span></a></li>
-<li><a href="sms:{PHONE}"><span class="i" style="background:var(--yellow);color:#111">{ICON_SMS}</span><span>SMS<small>Si vous ne pouvez pas appeler</small></span></a></li>
+<li><a href="{WA_LINK}"{NEW_TAB}><span class="i" style="background:var(--green);color:#06210f">{ICON_WA}</span><span>{MSG_NAME}<small>Envoyez une photo de votre clé</small></span></a></li>
+{sms_item}
 </ul>
 </div>
 <form class="devis" id="devis-form">
@@ -314,7 +321,7 @@ def devis_section():
 <label class="full">Urgence<select name="urgence"><option>Oui, je suis bloqué maintenant</option><option>Aujourd’hui</option><option>Dans les prochains jours</option><option>Simple demande de prix</option></select></label>
 <label class="full">Précisions (facultatif)<textarea name="message" rows="3" placeholder="Ex. clés enfermées dans le coffre, une seule clé restante…"></textarea></label>
 <label class="full">Votre prénom (facultatif)<input name="nom" autocomplete="given-name"></label>
-<button class="btn btn-wa full" type="submit">{ICON_WA}Recevoir mon devis sur WhatsApp</button>
+<button class="btn btn-wa full" type="submit">{ICON_WA}Recevoir mon devis par {MSG_NAME}</button>
 <p class="small full" style="margin:0">Gratuit et sans engagement. Le prix est confirmé avant toute intervention.</p>
 </form>
 </div></section>
@@ -333,7 +340,7 @@ def home():
 <div class="eyebrow">Serrurier automobile · Île-de-France · 24h/24 – 7j/7</div>
 <h1>Clé perdue ou voiture fermée&nbsp;?<br><em>On vient à vous.</em></h1>
 <p class="sub">Ouverture de véhicule, double et programmation de clé, perte totale de clés, batterie : nous intervenons directement là où se trouve votre voiture, partout en Île-de-France.</p>
-<div class="btn-row">{btn_call("pulse")}{btn_wa("Devis gratuit WhatsApp")}</div>
+<div class="btn-row">{btn_call("pulse")}{btn_wa(f"Devis gratuit par {MSG_NAME}")}</div>
 <ul class="checks"><li>Intervention à domicile</li><li>24h/24 – 7j/7</li><li>Prix confirmé avant intervention</li><li>Pas de remorquage</li></ul>
 <div class="price-badge">Ouverture de voiture dès 84 € · Double de clé dès 114 €</div>
 </div></section>
@@ -486,7 +493,7 @@ def main():
         "background_color": "#090a0c", "theme_color": "#090a0c",
         "icons": [{"src": "/images/icon-192.png", "sizes": "192x192", "type": "image/png"},
                   {"src": "/images/icon-512.png", "sizes": "512x512", "type": "image/png"}]}, ensure_ascii=False, indent=2))
-    if "600000000" in PHONE:
+    if "600000000" in PHONE:  # numéro d’exemple
         print("⚠️  ATTENTION : le numéro de téléphone est encore le numéro d'exemple. Modifiez PHONE en haut de tools/build.py.")
     print("Site généré :", len(urls), "pages")
 
