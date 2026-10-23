@@ -85,7 +85,7 @@ td:last-child{{text-align:right;color:#ffcb18;font-weight:900;white-space:nowrap
 <div class="list">
 <div><b>dès 84 €</b>Ouverture de voiture</div>
 <div><b>dès 114 €</b>Double de clé</div>
-<div><b>dès 84 €</b>Programmation de clé</div>
+<div><b>dès 99 €</b>Programmation de clé</div>
 <div><b>dès 200 €</b>Perte totale de clés</div>
 </div>
 <div class="call">{PHONE_SVG}<div><small>Appelez maintenant</small><div class="n">{PHONE}</div></div></div>
@@ -98,7 +98,7 @@ td:last-child{{text-align:right;color:#ffcb18;font-weight:900;white-space:nowrap
 <tr><td>Ouverture de véhicule</td><td>dès 84 €</td></tr>
 <tr><td>Double de clé avec puce</td><td>dès 114 €</td></tr>
 <tr><td>Double avec télécommande</td><td>dès 159 €</td></tr>
-<tr><td>Programmation de clé</td><td>dès 84 €</td></tr>
+<tr><td>Programmation de clé</td><td>dès 99 €</td></tr>
 <tr><td>Perte totale de clés</td><td>dès 200 €</td></tr>
 <tr><td>Assistance au démarrage</td><td>dès 64 €</td></tr>
 <tr><td>Remplacement de batterie</td><td>dès 149 €</td></tr>
