@@ -16,6 +16,7 @@ PHONE = "+33607887281"           # numéro au format international, sans espaces
 PHONE_DISPLAY = "06 07 88 72 81"  # numéro tel qu'affiché sur le site
 WHATSAPP = ""                    # numéro WhatsApp sans le + (ex. "33607887281") ; vide = boutons SMS
 GA_ID = ""                       # ID Google Analytics 4 (ex. "G-XXXXXXX"), optionnel
+OPENING_SOON = True              # True = mode « Ouverture prochainement » ; False = activité ouverte
 # ──────────────────────────────────────────────────────────────────────────────
 
 SITE = "https://duplicleexpress.github.io"
@@ -158,6 +159,13 @@ HOME_FAQ = [
     ("Comment obtenir un devis rapidement ?", "Appelez-nous, ou remplissez le formulaire de devis : il ouvre un SMS avec votre demande déjà rédigée. Nous nous efforçons de répondre sous 30 minutes."),
 ]
 
+if OPENING_SOON:
+    HOME_FAQ = [("Êtes-vous déjà ouverts ?", "Pas encore : Dupli’Clé Express ouvre prochainement en Île-de-France. Vous pouvez déjà nous appeler pour demander un prix ou être prévenu de l’ouverture.")] + [f for f in HOME_FAQ if "24h/24" not in f[0]]
+SOON = ('<div class="soon"><b>🚧 Ouverture prochainement.</b> Nous ne réalisons pas encore d’interventions. '
+        'Appelez-nous pour demander un prix ou être prévenu de l’ouverture.</div>') if OPENING_SOON else ""
+EYEBROW_WHEN = "Ouverture prochainement" if OPENING_SOON else "24h/24 – 7j/7"
+PULSE = "" if OPENING_SOON else "pulse"
+
 # ─── Icônes ───────────────────────────────────────────────────────────────────
 ICON_PHONE = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2Z"/></svg>'
 ICON_WA = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>'
@@ -186,7 +194,7 @@ def business_schema():
         "@type": ["Locksmith", "AutomotiveBusiness"],
         "@id": SITE + "/#business",
         "name": NAME,
-        "description": "Serrurier automobile à domicile en Île-de-France, 24h/24 : ouverture de véhicule, double et programmation de clé, perte totale de clés, assistance au démarrage et remplacement de batterie.",
+        "description": "Serrurier automobile à domicile en Île-de-France" + ("" if OPENING_SOON else ", 24h/24") + " : ouverture de véhicule, double et programmation de clé, perte totale de clés, assistance au démarrage et remplacement de batterie.",
         "url": SITE + "/",
         "logo": SITE + "/images/icon-512.png",
         "image": SITE + "/images/og.jpg",
@@ -194,10 +202,6 @@ def business_schema():
         "priceRange": "€€",
         "areaServed": [{"@type": "AdministrativeArea", "name": REGION}] +
                       [{"@type": "AdministrativeArea", "name": f"{n} ({c})"} for c, n in ZONES],
-        "openingHoursSpecification": {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-            "opens": "00:00", "closes": "23:59"},
         "hasOfferCatalog": {
             "@type": "OfferCatalog", "name": "Prestations de serrurerie automobile",
             "itemListElement": [{
@@ -219,6 +223,9 @@ def ld(obj):
 
 
 def head(title, desc, path, extra_ld=""):
+    if OPENING_SOON:
+        title = title.replace(" 24/7", "")
+        desc = "Ouverture prochainement. " + desc.replace(", 24h/24 :", " :").replace("24h/24, ", "").replace(", 24h/24", "")
     ga = ""
     if GA_ID:
         ga = (f'<script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>'
@@ -257,18 +264,18 @@ def head(title, desc, path, extra_ld=""):
 
 
 def header():
-    return f'''<div class="topbar">🚨 Urgence 24h/24 en Île-de-France — <a href="tel:{PHONE}">{PHONE_DISPLAY}</a></div>
+    return f'''<div class="topbar">{"🚧 Ouverture prochainement en Île-de-France — Infos et prix :" if OPENING_SOON else "🚨 Urgence 24h/24 en Île-de-France —"} <a href="tel:{PHONE}">{PHONE_DISPLAY}</a></div>
 <header class="site"><div class="container head">
 <a class="logo" href="/" aria-label="{NAME} — accueil"><img src="/images/logo-header.webp" alt="{NAME} — serrurier automobile à domicile 24/7" width="540" height="315"></a>
 <nav aria-label="Menu principal"><a href="/#services">Services</a><a href="/#tarifs">Tarifs</a><a href="/#zones">Zones</a><a href="/#faq">FAQ</a><a href="/#devis">Devis</a></nav>
-<a class="head-call" href="tel:{PHONE}"><small>Appel 24/7</small><span>{PHONE_DISPLAY}</span></a>
+<a class="head-call" href="tel:{PHONE}"><small>{"Infos & prix" if OPENING_SOON else "Appel 24/7"}</small><span>{PHONE_DISPLAY}</span></a>
 </div></header>
 '''
 
 
 def cta_band():
     return f'''<section class="cta-band"><div class="container">
-<div><h2>Bloqué ? Clé perdue ? Appelez maintenant.</h2><p>Devis confirmé au téléphone, avant tout déplacement.</p></div>
+{'<div><h2>Une question ? Un prix ? Appelez-nous.</h2><p>Ouverture prochainement en Île-de-France.</p></div>' if OPENING_SOON else '<div><h2>Bloqué ? Clé perdue ? Appelez maintenant.</h2><p>Devis confirmé au téléphone, avant tout déplacement.</p></div>'}
 {btn_call()}
 </div></section>
 '''
@@ -280,7 +287,7 @@ def footer():
     zones2 = "".join(f"<li>{n} ({c})</li>" for c, n in ZONES[4:])
     return f'''<footer class="site"><div class="container">
 <div class="cols">
-<div><h3>{NAME}</h3><p>Serrurier automobile à domicile en Île-de-France, disponible 24h/24 et 7j/7. Ouverture de véhicule, doubles et programmation de clés, perte totale de clés, batterie.</p>
+<div><h3>{NAME}</h3><p>Serrurier automobile à domicile en Île-de-France, {"ouverture prochainement" if OPENING_SOON else "disponible 24h/24 et 7j/7"}. Ouverture de véhicule, doubles et programmation de clés, perte totale de clés, batterie.</p>
 <p><a href="tel:{PHONE}"><b style="color:var(--yellow)">📞 {PHONE_DISPLAY}</b></a></p>
 <div class="social"><span>Snapchat · bientôt</span><span>Instagram · bientôt</span><span>TikTok · bientôt</span><span>Facebook · bientôt</span></div></div>
 <div><h3>Nos services</h3><ul>{svc_links}</ul></div>
@@ -307,7 +314,7 @@ def devis_section():
 <h2>Votre devis <em>en quelques minutes</em></h2>
 <p class="lead">Indiquez votre véhicule et votre situation : le formulaire ouvre {MSG_NAME} avec votre demande déjà rédigée. Nous nous efforçons de vous répondre sous 30 minutes. Pour une urgence, appelez directement.</p>
 <ul class="contact-list">
-<li><a href="tel:{PHONE}"><span class="i" style="background:var(--red);color:#fff">{ICON_PHONE}</span><span>{PHONE_DISPLAY}<small>Appel 24h/24 – le plus rapide</small></span></a></li>
+<li><a href="tel:{PHONE}"><span class="i" style="background:var(--red);color:#fff">{ICON_PHONE}</span><span>{PHONE_DISPLAY}<small>{"Infos et demandes de prix" if OPENING_SOON else "Appel 24h/24 – le plus rapide"}</small></span></a></li>
 <li><a href="{WA_LINK}"{NEW_TAB}><span class="i" style="background:var(--green);color:#06210f">{ICON_WA}</span><span>{MSG_NAME}<small>Envoyez une photo de votre clé</small></span></a></li>
 {sms_item}
 </ul>
@@ -337,17 +344,17 @@ def home():
     desc = "Serrurier automobile à domicile en Île-de-France, 24h/24 : ouverture de voiture dès 84 €, double de clé, programmation, perte totale de clés, batterie. Devis confirmé avant intervention."
     return head(title, desc, "/", ld(faq_schema(HOME_FAQ))) + header() + f'''<main>
 <section class="hero" style="--img:url('/images/hero.webp')"><div class="container">
-<div class="eyebrow">Serrurier automobile · Île-de-France · 24h/24 – 7j/7</div>
+<div class="eyebrow">Serrurier automobile · Île-de-France · {EYEBROW_WHEN}</div>
 <h1>Clé perdue ou voiture fermée&nbsp;?<br><em>On vient à vous.</em></h1>
 <p class="sub">Ouverture de véhicule, double et programmation de clé, perte totale de clés, batterie : nous intervenons directement là où se trouve votre voiture, partout en Île-de-France.</p>
-<div class="btn-row">{btn_call("pulse")}{btn_wa(f"Devis gratuit par {MSG_NAME}")}</div>
-<ul class="checks"><li>Intervention à domicile</li><li>24h/24 – 7j/7</li><li>Prix confirmé avant intervention</li><li>Pas de remorquage</li></ul>
+{SOON}<div class="btn-row">{btn_call(PULSE)}{btn_wa(f"Devis gratuit par {MSG_NAME}")}</div>
+<ul class="checks"><li>Intervention à domicile</li><li>{"Bientôt 24h/24 – 7j/7" if OPENING_SOON else "24h/24 – 7j/7"}</li><li>Prix confirmé avant intervention</li><li>Pas de remorquage</li></ul>
 <div class="price-badge">Ouverture de voiture dès 84 € · Double de clé dès 114 €</div>
 </div></section>
 
 <section class="trust" aria-label="Nos engagements"><div class="container">
 <div><span class="ico">🚐</span><span><b>On se déplace</b>Domicile, travail, parking</span></div>
-<div><span class="ico">🕐</span><span><b>24h/24 – 7j/7</b>Nuits, week-ends, jours fériés</span></div>
+<div><span class="ico">🕐</span><span><b>{"Bientôt 24h/24 – 7j/7" if OPENING_SOON else "24h/24 – 7j/7"}</b>Nuits, week-ends, jours fériés</span></div>
 <div><span class="ico">💶</span><span><b>Prix annoncé</b>Confirmé avant de commencer</span></div>
 <div><span class="ico">🔑</span><span><b>Sans casse</b>Outils professionnels adaptés</span></div>
 </div></section>
@@ -423,10 +430,10 @@ def service_page(s):
     others = "".join(f'''<a class="card" href="/{o["slug"]}/"><img src="/images/{o["img"]}.webp" alt="{o["card"]}" loading="lazy" width="360" height="320"><div class="copy"><h3>{o["card"]}</h3><p>{o["short"]}</p><div class="from"><span>Voir →</span>dès {o["price"]} €</div></div></a>''' for o in [x for x in SERVICES if x is not s][:3])
     return head(s["title"], s["desc"], path, ld(crumbs) + ld(service) + ld(faq_schema(s["faq"]))) + header() + f'''<main>
 <section class="hero" style="--img:url('/images/{s["img"]}.webp')"><div class="container">
-<div class="eyebrow">Serrurier automobile · Île-de-France · 24h/24</div>
+<div class="eyebrow">Serrurier automobile · Île-de-France · {EYEBROW_WHEN}</div>
 <h1>{s["h1"]}</h1>
 <p class="sub">{s["intro"]}</p>
-<div class="btn-row">{btn_call("pulse")}{btn_wa()}</div>
+{SOON}<div class="btn-row">{btn_call(PULSE)}{btn_wa()}</div>
 <div class="price-badge">À partir de {s["price"]} € · prix confirmé avant intervention</div>
 </div></section>
 <div class="container crumbs"><a href="/">Accueil</a> › {s["card"]}</div>
