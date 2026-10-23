@@ -63,11 +63,11 @@ SERVICES = [
         ],
     },
     {
-        "slug": "programmation-cle-voiture", "img": "programmation", "price": 84,
+        "slug": "programmation-cle-voiture", "img": "programmation", "price": 99,
         "card": "Programmation de clé",
         "h1": "Programmation de clé <em>et télécommande</em>",
         "title": "Programmation de clé de voiture et télécommande – Île-de-France | Dupli’Clé Express",
-        "desc": "Clé qui ne démarre plus la voiture, télécommande désynchronisée ? Programmation de clé auto à domicile en Île-de-France dès 84 €. Devis avant intervention.",
+        "desc": "Clé qui ne démarre plus la voiture, télécommande désynchronisée ? Programmation de clé auto à domicile en Île-de-France dès 99 €. Devis avant intervention.",
         "short": "Votre clé ne démarre plus ou la télécommande ne répond plus ?",
         "intro": "Une clé neuve, une télécommande qui ne répond plus, un antidémarrage qui refuse votre clé : la programmation permet d’associer électroniquement la clé à votre véhicule. Nous intervenons sur place avec le matériel de diagnostic adapté.",
         "body": [
@@ -137,7 +137,7 @@ PRICE_ROWS = [
     ("Ouverture de véhicule", 84, "ouverture-voiture"),
     ("Double de clé avec puce", 114, "double-cle-voiture"),
     ("Double avec télécommande", 159, "double-cle-voiture"),
-    ("Programmation de clé", 84, "programmation-cle-voiture"),
+    ("Programmation de clé", 99, "programmation-cle-voiture"),
     ("Perte totale de clés", 200, "perte-totale-cle-voiture"),
     ("Assistance au démarrage", 64, "assistance-demarrage"),
     ("Remplacement de batterie", 149, "remplacement-batterie"),
@@ -146,6 +146,7 @@ PRICE_ROWS = [
 ZONES = [("75", "Paris"), ("77", "Seine-et-Marne"), ("78", "Yvelines"), ("91", "Essonne"),
          ("92", "Hauts-de-Seine"), ("93", "Seine-Saint-Denis"), ("94", "Val-de-Marne"), ("95", "Val-d’Oise")]
 
+BRAND_LOGOS = {"Citroën": "citroen", "DS": "dsautomobiles"}  # fichier logo dans /images/marques/ (sinon nom en minuscules)
 BRANDS = ["Renault", "Peugeot", "Citroën", "Dacia", "Volkswagen", "Toyota", "Ford", "Opel", "Fiat",
           "Nissan", "Kia", "Hyundai", "Seat", "Skoda", "Audi", "BMW", "Mercedes", "Mini", "Suzuki", "DS"]
 
@@ -342,7 +343,10 @@ def home():
     prices = "".join(f'<a href="/{slug}/"><span>{label}</span><b>À partir de {p} €</b></a>' for label, p, slug in PRICE_ROWS)
     zones = "".join(f"<li><b>{c}</b> {n}</li>" for c, n in ZONES)
     linked = {b["brand"]: b["slug"] for b in BRAND_PAGES}
-    brands = "".join(f'<li><a href="/{linked[b]}/">{b} →</a></li>' if b in linked else f"<li>{b}</li>" for b in BRANDS)
+    def brand_tile(b):
+        inner = f'<span>{b}</span><img src="/images/marques/{BRAND_LOGOS.get(b, b.lower())}.svg" alt="Logo {b}" width="40" height="40" loading="lazy">'
+        return f'<li><a href="/{linked[b]}/">{inner}</a></li>' if b in linked else f"<li><div>{inner}</div></li>"
+    brands = "".join(brand_tile(b) for b in BRANDS)
     title = "Serrurier automobile 24/7 Île-de-France – Clé voiture, ouverture | Dupli’Clé Express"
     desc = "Serrurier automobile à domicile en Île-de-France, 24h/24 : ouverture de voiture dès 84 €, double de clé, programmation, perte totale de clés, batterie. Devis confirmé avant intervention."
     return head(title, desc, "/", ld(faq_schema(HOME_FAQ))) + header() + f'''<main>
@@ -400,7 +404,8 @@ def home():
 <div class="tag">Marques</div>
 <h2>Toutes les <em>grandes marques</em></h2>
 <p class="lead">Nous intervenons sur la plupart des véhicules du marché. Donnez-nous le modèle et l’année : la faisabilité est confirmée immédiatement.</p>
-<ul class="chips">{brands}</ul>
+<ul class="brands">{brands}</ul>
+<p class="small" style="margin-top:12px">Marques citées pour indiquer les véhicules pris en charge. Dupli’Clé Express est un serrurier indépendant, sans lien avec ces constructeurs.</p>
 </div>
 </div></section>
 

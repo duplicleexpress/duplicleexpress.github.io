@@ -191,3 +191,10 @@ footer .legal{border-top:1px solid var(--line);margin-top:30px;padding-top:18px;
 /* Bandeau « Ouverture prochainement » */
 .soon{margin-top:22px;max-width:640px;background:#ffcb181f;border:1px solid #ffcb1888;border-left:4px solid var(--yellow);border-radius:8px;padding:13px 16px;color:#fff3c4;font-size:15.5px}
 .soon b{color:var(--yellow)}
+
+/* Marques avec logo */
+.brands{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.brands a,.brands div{display:flex;flex-direction:column;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 6px;font-weight:700;font-size:14px;text-align:center;height:100%}
+.brands a{border-color:#ffcb1866}
+.brands a:hover{border-color:var(--yellow)}
+.brands img{width:40px;height:40px;object-fit:contain;opacity:.9}

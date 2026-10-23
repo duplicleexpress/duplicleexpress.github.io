@@ -127,7 +127,7 @@ MARKET = [
     ("Ouverture de voiture", "69 – 150 €", "84 €", "ok", "Dans le bas de la fourchette : bien placé."),
     ("Double de clé avec puce", "90 – 180 €", "114 €", "ok", "Bien placé, moins cher qu’une concession."),
     ("Double avec télécommande", "150 – 400 €", "159 €", "ok", "Très compétitif."),
-    ("Programmation de clé", "100 – 250 €", "84 €", "low", "Moins cher que le marché : vous pourriez passer à 99 € sans perdre de clients."),
+    ("Programmation de clé", "100 – 250 €", "99 €", "ok", "Passé de 84 € à 99 € : toujours moins cher que le marché."),
     ("Perte totale de clés", "129 – 250 €", "200 €", "ok", "Dans la moyenne. 2 concurrents affichent 129–149 € : à surveiller."),
 ]
 
@@ -348,7 +348,7 @@ a{{color:var(--y)}}
 <h3>Ce qu’on en retient</h3>
 <ul class="dots">
 <li><b>Vos prix sont bons.</b> Vous êtes dans le bas ou le milieu du marché partout. Pas besoin de baisser.</li>
-<li><b>Programmation (84 €) :</b> c’est en dessous du marché (100–250 €). Vous pouvez passer à <b>99 €</b>. Dites-le-moi et je change le site.</li>
+<li><b>Programmation :</b> passée de 84 € à <b>99 €</b> (site, flyer et dossier mis à jour). Vous restez moins cher que le marché (100–250 €).</li>
 <li><b>La nuit et le week-end :</b> beaucoup de concurrents ajoutent +20 % à +100 % (moyenne autour de +30 %). Décidez votre règle <b>avant</b> d’ouvrir et annoncez-la clairement au téléphone – c’est un vrai argument de confiance.</li>
 <li><b>Votre force face à eux :</b> des prix affichés clairement, le devis par SMS avec photo de la clé, et un vrai serrurier local du 94 (beaucoup de sites concurrents sont des plateformes qui revendent les appels).</li>
 <li><b>Argument à utiliser :</b> certaines assurances auto et cartes bancaires remboursent la perte de clés. Dites-le aux clients : ça les rassure sur le prix. Donnez toujours une facture détaillée.</li>
