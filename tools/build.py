@@ -20,6 +20,10 @@ OPENING_SOON = True              # True = mode « Ouverture prochainement » ; F
 # ──────────────────────────────────────────────────────────────────────────────
 
 SITE = "https://duplicleexpress.github.io"
+
+# Version des fichiers CSS/JS : change dès que leur contenu change (évite l'ancien design en cache)
+import hashlib
+ASSET_V = hashlib.md5(b"".join(open(os.path.join(ROOT, f), "rb").read() for f in ("css/style.css", "js/main.js"))).hexdigest()[:8]
 NAME = "Dupli’Clé Express"
 REGION = "Île-de-France"
 
@@ -254,12 +258,12 @@ def head(title, desc, path, extra_ld=""):
 <link rel="apple-touch-icon" href="/images/icon-180.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preload" as="image" href="/images/logo-header.webp">
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/style.css?v={ASSET_V}">
 {ga}
 {ld(business_schema())}
 {extra_ld}
 <script>window.DCE={{wa:"{WHATSAPP}",tel:"{PHONE}"}}</script>
-<script src="/js/main.js" defer></script>
+<script src="/js/main.js?v={ASSET_V}" defer></script>
 </head>
 <body>
 '''
