@@ -156,6 +156,7 @@ HOME_FAQ = [
     ("Quels documents dois-je fournir ?", "Une pièce d’identité et la carte grise (ou un document prouvant votre droit d’usage du véhicule). Nous n’ouvrons et ne créons aucune clé sans ces vérifications."),
     ("Est-ce moins cher qu’en concession ?", "Souvent, oui : pas de remorquage, pas d’immobilisation de plusieurs jours, et nous venons à vous. Demandez un devis pour comparer."),
     ("Quelles marques de voitures prenez-vous en charge ?", "Nous intervenons sur la plupart des marques courantes (Renault, Peugeot, Citroën, Volkswagen, Toyota…). La faisabilité dépend du modèle et de l’année : elle vous est confirmée au téléphone."),
+    ("Mon assurance peut-elle rembourser une clé perdue ?", "C’est possible : certains contrats d’assurance auto ou certaines cartes bancaires remboursent tout ou partie des frais en cas de perte ou de vol de clés. Vérifiez votre contrat ; nous vous remettons une facture détaillée pour votre demande de remboursement."),
     ("Comment obtenir un devis rapidement ?", "Appelez-nous, ou remplissez le formulaire de devis : il ouvre un SMS avec votre demande déjà rédigée. Nous nous efforçons de répondre sous 30 minutes."),
 ]
 
@@ -282,6 +283,7 @@ def cta_band():
 
 
 def footer():
+    brand_links = "".join(f'<li><a href="/{b["slug"]}/">Clé {b["brand"]}</a></li>' for b in BRAND_PAGES)
     svc_links = "".join(f'<li><a href="/{s["slug"]}/">{s["card"]}</a></li>' for s in SERVICES)
     zones = "".join(f"<li>{n} ({c})</li>" for c, n in ZONES[:4])
     zones2 = "".join(f"<li>{n} ({c})</li>" for c, n in ZONES[4:])
@@ -291,7 +293,7 @@ def footer():
 <p><a href="tel:{PHONE}"><b style="color:var(--yellow)">📞 {PHONE_DISPLAY}</b></a></p>
 <div class="social"><span>Snapchat · bientôt</span><span>Instagram · bientôt</span><span>TikTok · bientôt</span><span>Facebook · bientôt</span></div></div>
 <div><h3>Nos services</h3><ul>{svc_links}</ul></div>
-<div><h3>Zones d’intervention</h3><ul>{zones}{zones2}</ul></div>
+<div><h3>Zones d’intervention</h3><ul><li><a href="/serrurier-automobile-val-de-marne/">Val-de-Marne (94) →</a></li>{zones}{zones2}</ul><h3 style="margin-top:18px">Marques</h3><ul>{brand_links}</ul></div>
 </div>
 <div class="legal">© {date.today().year} {NAME} · Serrurier automobile · {REGION}</div>
 </div></footer>
@@ -339,7 +341,8 @@ def home():
     cards = "".join(f'''<a class="card" href="/{s["slug"]}/"><img src="/images/{s["img"]}.webp" alt="{s["card"]}" loading="lazy" width="360" height="320"><div class="copy"><h3>{s["card"]}</h3><p>{s["short"]}</p><div class="from"><span>Voir le détail →</span>dès {s["price"]} €</div></div></a>''' for s in SERVICES)
     prices = "".join(f'<a href="/{slug}/"><span>{label}</span><b>À partir de {p} €</b></a>' for label, p, slug in PRICE_ROWS)
     zones = "".join(f"<li><b>{c}</b> {n}</li>" for c, n in ZONES)
-    brands = "".join(f"<li>{b}</li>" for b in BRANDS)
+    linked = {b["brand"]: b["slug"] for b in BRAND_PAGES}
+    brands = "".join(f'<li><a href="/{linked[b]}/">{b} →</a></li>' if b in linked else f"<li>{b}</li>" for b in BRANDS)
     title = "Serrurier automobile 24/7 Île-de-France – Clé voiture, ouverture | Dupli’Clé Express"
     desc = "Serrurier automobile à domicile en Île-de-France, 24h/24 : ouverture de voiture dès 84 €, double de clé, programmation, perte totale de clés, batterie. Devis confirmé avant intervention."
     return head(title, desc, "/", ld(faq_schema(HOME_FAQ))) + header() + f'''<main>
@@ -477,6 +480,130 @@ def page_404():
 ''' + footer()
 
 
+# ─── Pages locales et pages marques (référencement Google) ───────────────────
+TOWNS_94 = ["Créteil", "Vitry-sur-Seine", "Champigny-sur-Marne", "Saint-Maur-des-Fossés", "Ivry-sur-Seine",
+            "Maisons-Alfort", "Villejuif", "Fontenay-sous-Bois", "Vincennes", "Alfortville", "Choisy-le-Roi",
+            "Nogent-sur-Marne", "Thiais", "Orly", "Villeneuve-Saint-Georges", "Cachan", "L’Haÿ-les-Roses",
+            "Charenton-le-Pont", "Le Kremlin-Bicêtre", "Bonneuil-sur-Marne", "Joinville-le-Pont", "Fresnes",
+            "Chevilly-Larue", "Rungis", "Sucy-en-Brie", "Boissy-Saint-Léger", "Le Perreux-sur-Marne",
+            "Villiers-sur-Marne", "Chennevières-sur-Marne", "Saint-Maurice"]
+
+
+def svc_list_html():
+    return "<ul class=\"steps\">" + "".join(
+        f'<li><span><a href="/{s["slug"]}/" style="color:#fff">{s["card"]}</a> — <b style="color:var(--yellow)">dès {s["price"]} €</b></span></li>'
+        for s in SERVICES) + "</ul>"
+
+
+BRAND_PAGES = [
+    {"brand": "Renault", "models": "Clio, Mégane, Captur, Scénic, Kangoo, Twingo, Kadjar, Austral",
+     "keys": "Selon l’année, une Renault peut avoir une clé classique avec télécommande ou une <b>carte Renault</b> (carte mains libres) à la place de la clé. Les deux se refont et se programment, mais la carte demande un matériel spécifique : donnez-nous le modèle et l’année au téléphone pour un prix exact.",
+     "tip": "Une carte Renault qui n’est plus reconnue (« carte non détectée ») ne veut pas toujours dire qu’elle est perdue : c’est parfois la pile ou un défaut de lecteur. Nous vérifions avant de proposer une nouvelle carte."},
+    {"brand": "Peugeot", "models": "208, 308, 2008, 3008, 5008, Partner, Rifter, Expert",
+     "keys": "La plupart des Peugeot récentes utilisent une <b>clé à lame pliante avec télécommande</b>, et les versions les plus récentes peuvent avoir une clé mains libres. Nous préparons le double puis le programmons sur le véhicule, selon le modèle et l’année.",
+     "tip": "Si la télécommande de votre Peugeot ne répond plus mais que la clé démarre la voiture, commencez par changer la pile : c’est souvent suffisant."},
+    {"brand": "Citroën", "models": "C3, C4, C5 Aircross, Berlingo, C3 Aircross, Jumpy, C1",
+     "keys": "Les Citroën récentes partagent souvent la même technologie de clé que les Peugeot (même groupe automobile) : <b>clé pliante avec télécommande</b> ou clé mains libres selon la version. Nous refaisons et programmons la clé sur place quand le modèle le permet.",
+     "tip": "Pour un Berlingo ou un Jumpy utilisé pour le travail, un double de clé évite d’immobiliser le véhicule le jour où la seule clé est perdue."},
+    {"brand": "Dacia", "models": "Sandero, Duster, Logan, Jogger, Spring, Lodgy, Dokker",
+     "keys": "Les Dacia utilisent le plus souvent une <b>clé avec télécommande</b>, plus simple que sur d’autres marques : le double est en général parmi les moins chers. La faisabilité dépend du modèle et de l’année.",
+     "tip": "Beaucoup de Sandero et de Duster d’occasion sont vendues avec une seule clé : faire un double tout de suite coûte bien moins cher qu’une perte totale."},
+    {"brand": "Volkswagen", "models": "Polo, Golf, T-Roc, Tiguan, Passat, Touran, Caddy, Transporter",
+     "keys": "Volkswagen utilise souvent une <b>clé pliante avec télécommande</b>, et certaines versions ont l’accès sans clé (Keyless). La programmation des modèles récents peut demander une procédure spécifique : nous vous confirmons la faisabilité avant de nous déplacer.",
+     "tip": "Sur certains modèles récents, la programmation d’une clé est plus complexe : donnez-nous l’année exacte (sur la carte grise) pour un devis fiable."},
+    {"brand": "Toyota", "models": "Yaris, Corolla, C-HR, RAV4, Aygo, Auris, Prius",
+     "keys": "Beaucoup de Toyota, notamment les hybrides, utilisent une <b>clé intelligente</b> (Smart Entry : on ouvre et on démarre sans sortir la clé de la poche). Les modèles plus anciens ont une clé classique à télécommande. Nous vous confirmons la faisabilité selon le modèle et l’année.",
+     "tip": "Une clé intelligente qui n’est plus détectée a souvent une pile faible. Votre manuel indique en général comment démarrer quand même en approchant la clé du bouton de démarrage."},
+]
+for b in BRAND_PAGES:
+    b["slug"] = "cle-voiture-" + b["brand"].lower().replace("ë", "e").replace("ö", "o")
+
+
+def landing_page(slug, title, desc, h1, intro, img, price, body, faq, label):
+    path = f"/{slug}/"
+    crumbs = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Accueil", "item": SITE + "/"},
+        {"@type": "ListItem", "position": 2, "name": label, "item": SITE + path}]}
+    others = "".join(f'<a class="card" href="/{o["slug"]}/"><img src="/images/{o["img"]}.webp" alt="{o["card"]}" loading="lazy" width="360" height="320"><div class="copy"><h3>{o["card"]}</h3><p>{o["short"]}</p><div class="from"><span>Voir →</span>dès {o["price"]} €</div></div></a>' for o in SERVICES[:3])
+    return head(title, desc, path, ld(crumbs) + ld(faq_schema(faq))) + header() + f'''<main>
+<section class="hero" style="--img:url('/images/{img}.webp')"><div class="container">
+<div class="eyebrow">Serrurier automobile · Île-de-France · {EYEBROW_WHEN}</div>
+<h1>{h1}</h1>
+<p class="sub">{intro}</p>
+{SOON}<div class="btn-row">{btn_call(PULSE)}{btn_wa()}</div>
+<div class="price-badge">À partir de {price} € · prix confirmé avant intervention</div>
+</div></section>
+<div class="container crumbs"><a href="/">Accueil</a> › {label}</div>
+<section class="block"><div class="container svc">
+<article>
+{body}
+<h2>Questions fréquentes</h2>
+<div class="faq">{faq_html(faq)}</div>
+</article>
+<aside>
+<div class="tag">{label}</div>
+<div class="price">À partir de {price} €</div>
+<p class="small">Prix final selon votre véhicule, confirmé au téléphone avant tout déplacement.</p>
+{btn_call()}
+{btn_wa()}
+<a class="btn btn-ghost" href="/#devis">Formulaire de devis</a>
+</aside>
+</div></section>
+{cta_band()}
+<section class="block alt"><div class="container">
+<div class="tag">Nos services</div>
+<h2>Nous pouvons aussi vous aider pour…</h2>
+<div class="grid">{others}</div>
+</div></section>
+</main>
+''' + footer()
+
+
+def page_94():
+    towns = "".join(f"<li>{t}</li>" for t in TOWNS_94)
+    body = f'''<h2>Un serrurier auto qui vient à vous dans tout le 94</h2>
+<p>Dupli’Clé Express est un serrurier automobile basé dans le Val-de-Marne. Nous nous déplaçons là où se trouve votre voiture : devant chez vous, sur le parking de votre travail, d’une gare RER ou d’un centre commercial (Créteil Soleil, Belle Épine…). Pas de remorquage, pas de rendez-vous en concession.</p>
+<h2>Nos prestations dans le Val-de-Marne</h2>
+{svc_list_html()}
+<h2>Villes desservies</h2>
+<p>Nous intervenons dans toutes les communes du Val-de-Marne, notamment :</p>
+<ul class="chips">{towns}</ul>
+<div class="notice">Le délai d’arrivée dépend de votre position : il vous est annoncé au téléphone, avec le prix, avant tout déplacement.</div>
+<h2>Comment ça se passe ?</h2>
+<ol class="steps"><li>Vous appelez et indiquez votre véhicule (marque, modèle, année) et votre adresse</li><li>Nous confirmons la faisabilité et le prix</li><li>Nous venons sur place et réalisons l’intervention</li><li>Nous testons tout avec vous avant de partir</li></ol>'''
+    faq = [("Intervenez-vous à Créteil, Vitry et Champigny ?", "Oui, ainsi que dans toutes les communes du Val-de-Marne : Saint-Maur, Ivry, Maisons-Alfort, Villejuif, Fontenay-sous-Bois, Vincennes, Alfortville, Choisy-le-Roi…"),
+           ("Le déplacement est-il compris ?", "Le prix vous est annoncé au téléphone avant tout déplacement, selon votre adresse et votre véhicule. Aucune surprise à l’arrivée."),
+           ("Pouvez-vous intervenir sur un parking ?", "Oui : parking de résidence, de supermarché, de gare ou de travail, du moment que le véhicule est accessible.")]
+    return landing_page("serrurier-automobile-val-de-marne",
+                        "Serrurier automobile Val-de-Marne (94) – Créteil, Vitry, Champigny | Dupli’Clé Express",
+                        "Serrurier automobile à domicile dans le Val-de-Marne (94) : Créteil, Vitry, Champigny, Saint-Maur, Ivry… Ouverture de voiture dès 84 €, double de clé dès 114 €. Prix confirmé avant intervention.",
+                        "Serrurier automobile <em>Val-de-Marne (94)</em>",
+                        "Ouverture de voiture, double et programmation de clé, perte totale de clés : nous venons à vous à Créteil, Vitry, Champigny, Saint-Maur, Ivry et dans tout le 94.",
+                        "hero", 84, body, faq, "Val-de-Marne (94)")
+
+
+def brand_page(b):
+    B = b["brand"]
+    body = f'''<h2>Clé de {B} perdue, cassée ou à doubler ?</h2>
+<p>Nous intervenons sur la plupart des modèles {B} : <b>{b["models"]}</b>. Double de clé, programmation, ouverture sans casse ou création de clé après une perte totale : nous venons à vous, sans remorquage.</p>
+<h2>Quel type de clé pour votre {B} ?</h2>
+<p>{b["keys"]}</p>
+<div class="notice"><b>Conseil :</b> {b["tip"]}</div>
+<h2>Nos prestations pour {B}</h2>
+{svc_list_html()}
+<h2>Ce qu’il faut nous donner au téléphone</h2>
+<ol class="steps"><li>Le modèle exact (ex. {b["models"].split(", ")[0]})</li><li>L’année (indiquée sur la carte grise)</li><li>Votre situation : double, clé perdue, clé cassée, télécommande…</li><li>L’adresse où se trouve la voiture</li></ol>'''
+    faq = [(f"Faut-il aller chez {B} pour refaire une clé ?", f"Non. Pour de nombreux modèles {B}, nous réalisons le double ou la nouvelle clé sur place, souvent plus rapidement et pour moins cher qu’en concession. La faisabilité est confirmée avant intervention."),
+           (f"Combien coûte un double de clé {B} ?", "À partir de 114 € pour une clé avec puce et 159 € avec télécommande. Le prix exact dépend du modèle et de l’année : il vous est donné au téléphone avant tout déplacement."),
+           (f"J’ai perdu toutes les clés de ma {B}, que faire ?", "Appelez-nous : nous étudions la création d’une nouvelle clé sur place, sans remorquage, après vérification de la carte grise et de votre identité.")]
+    return landing_page(b["slug"],
+                        f"Clé voiture {B} : double, programmation, perte – à domicile | Dupli’Clé Express",
+                        f"Double de clé {B}, programmation, clé perdue ou ouverture sans casse ({b['models'].split(', ')[0]}, {b['models'].split(', ')[1]}…) à domicile en Île-de-France. Dès 114 €, prix confirmé avant intervention.",
+                        f"Clé de voiture <em>{B}</em> à domicile",
+                        f"Double, programmation, perte totale ou ouverture : nous intervenons sur votre {B} directement là où elle se trouve, en Île-de-France.",
+                        "double", 114, body, faq, f"Clé {B}")
+
+
 def write(rel, content):
     p = os.path.join(ROOT, rel)
     os.makedirs(os.path.dirname(p), exist_ok=True)
@@ -488,9 +615,12 @@ def main():
     write("index.html", home())
     for s in SERVICES:
         write(f"{s['slug']}/index.html", service_page(s))
+    write("serrurier-automobile-val-de-marne/index.html", page_94())
+    for b in BRAND_PAGES:
+        write(f"{b['slug']}/index.html", brand_page(b))
     write("404.html", page_404())
     today = date.today().isoformat()
-    urls = ["/"] + [f"/{s['slug']}/" for s in SERVICES]
+    urls = ["/"] + [f"/{s['slug']}/" for s in SERVICES] + ["/serrurier-automobile-val-de-marne/"] + [f"/{b['slug']}/" for b in BRAND_PAGES]
     write("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
           "".join(f"  <url><loc>{SITE}{u}</loc><lastmod>{today}</lastmod><priority>{'1.0' if u == '/' else '0.8'}</priority></url>\n" for u in urls) +
           "</urlset>\n")
