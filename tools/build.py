@@ -23,7 +23,7 @@ SITE = "https://duplicleexpress.github.io"
 
 # Version des fichiers CSS/JS : change dès que leur contenu change (évite l'ancien design en cache)
 import hashlib
-ASSET_V = hashlib.md5(b"".join(open(os.path.join(ROOT, f), "rb").read() for f in ("css/style.css", "js/main.js"))).hexdigest()[:8]
+ASSET_V = hashlib.md5(b"".join(open(os.path.join(ROOT, f), "rb").read() for f in ("css/style.css", "js/main.js", "js/hero3d.js"))).hexdigest()[:8]
 NAME = "Dupli’Clé Express"
 REGION = "Île-de-France"
 
@@ -353,15 +353,31 @@ def home():
     brands = "".join(brand_tile(b) for b in BRANDS)
     title = "Serrurier automobile 24/7 Île-de-France – Clé voiture, ouverture | Dupli’Clé Express"
     desc = "Serrurier automobile à domicile en Île-de-France, 24h/24 : ouverture de voiture dès 84 €, double de clé, programmation, perte totale de clés, batterie. Devis confirmé avant intervention."
-    return head(title, desc, "/", ld(faq_schema(HOME_FAQ))) + header() + f'''<main>
-<section class="hero" style="--img:url('/images/hero.webp')"><div class="container">
+    k3d = ('<script type="importmap">{"imports":{"three":"/js/vendor/three/three.module.min.js",'
+           '"three/addons/":"/js/vendor/three/addons/"}}</script>'
+           f'<script type="module" src="/js/hero3d.js?v={ASSET_V}"></script>')
+    return head(title, desc, "/", ld(faq_schema(HOME_FAQ)) + k3d) + header() + f'''<main>
+<section class="k3d" id="k3d" style="--img:url('/images/hero.webp')">
+<div class="k3d-stage">
+<canvas id="k3d-canvas" aria-hidden="true"></canvas>
+<div class="container k3d-panels">
+<div class="k3d-panel on" data-step="0">
 <div class="eyebrow">Serrurier automobile · Île-de-France · {EYEBROW_WHEN}</div>
 <h1>Clé perdue ou voiture fermée&nbsp;?<br><em>On vient à vous.</em></h1>
 <p class="sub">Ouverture de véhicule, double et programmation de clé, perte totale de clés, batterie : nous intervenons directement là où se trouve votre voiture, partout en Île-de-France.</p>
 {SOON}<div class="btn-row">{btn_call(PULSE)}{btn_wa(f"Devis gratuit par {MSG_NAME}")}</div>
 <ul class="checks"><li>Intervention à domicile</li><li>{"Bientôt 24h/24 – 7j/7" if OPENING_SOON else "24h/24 – 7j/7"}</li><li>Prix confirmé avant intervention</li><li>Pas de remorquage</li></ul>
 <div class="price-badge">Ouverture de voiture dès 84 € · Double de clé dès 114 €</div>
-</div></section>
+</div>
+<div class="k3d-panel" data-step="1"><div class="eyebrow">01 · Ouverture</div><h2>Clés enfermées&nbsp;?<br><em>On ouvre sans casse.</em></h2><p class="sub">Pas de vitre brisée, pas de serrure forcée. Une méthode adaptée à votre modèle.</p><div class="price-badge">Ouverture dès 84 €</div></div>
+<div class="k3d-panel" data-step="2"><div class="eyebrow">02 · Double de clé</div><h2>Une seule clé&nbsp;?<br><em>On la duplique chez vous.</em></h2><p class="sub">Avec puce ou télécommande, prête à démarrer. 15 € de remise sur la 2ᵉ clé.</p><div class="price-badge">Double de clé dès 114 €</div></div>
+<div class="k3d-panel" data-step="3"><div class="eyebrow">03 · Programmation</div><h2>Télécommande muette&nbsp;?<br><em>On la reprogramme.</em></h2><p class="sub">Association électronique à votre véhicule, puis test de l’ouverture et du démarrage avec vous.</p><div class="price-badge">Programmation dès 99 €</div></div>
+<div class="k3d-panel" data-step="4"><div class="eyebrow">04 · Perte totale</div><h2>Plus aucune clé&nbsp;?<br><em>On en recrée une sur place.</em></h2><p class="sub">Sans remorquage ni concession. Prix confirmé au téléphone avant de partir.</p><div class="btn-row">{btn_call()}<a class="btn btn-ghost" href="#services">Voir tous les services</a></div></div>
+</div>
+<div class="k3d-hint" aria-hidden="true">Faites défiler <span>↓</span></div>
+<div class="k3d-bar" aria-hidden="true"><i></i></div>
+</div>
+</section>
 
 <section class="trust" aria-label="Nos engagements"><div class="container">
 <div><span class="ico">🚐</span><span><b>On se déplace</b>Domicile, travail, parking</span></div>
